@@ -1,5 +1,5 @@
 const SearchForm = () => (
-    <div className="hidden md:flex lg:w-[500px] md:w-[400px]">
+    <div className="hidden lg:w-[500px] md:w-[400px]">
         <div className="w-full">
             <form className='m-0'>
                 <label htmlFor="search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
