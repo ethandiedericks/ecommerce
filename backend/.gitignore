@@ -1,5 +1,8 @@
 venv
 .env
 db.sqlite3
+# Ignore Python cache files
 __pycache__/
-**/__pycache__
+
+# Ignore individual Python compiled files
+*.pyc
