@@ -16,13 +16,28 @@ from .models import (
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = "__all__"
+        fields = ("id", "name")
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    average_rating = serializers.SerializerMethodField()
+    category = CategorySerializer()
+
+    def get_average_rating(self, obj):
+        return Review.get_average_rating(obj.id)
+
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = (
+            "id",
+            "name",
+            "description",
+            "price",
+            "category",
+            "stock_level",
+            "image",
+            "average_rating",
+        )
 
 
 class AddressSerializer(serializers.ModelSerializer):

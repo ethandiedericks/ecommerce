@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Avg
 from django.utils.text import slugify
 from django.contrib.auth import get_user_model
 
@@ -69,6 +70,12 @@ class Review(models.Model):
     rating = models.PositiveIntegerField()
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    @classmethod
+    def get_average_rating(cls, product_id):
+        return cls.objects.filter(product_id=product_id).aggregate(Avg("rating"))[
+            "rating__avg"
+        ]
 
 
 class Cart(models.Model):
