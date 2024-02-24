@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Cards from './Cards';
-import axios from '../axios'; // Import the Axios instance
+import axios from '../axios';
 
 const CategoryOverview = () => {
   const [categories, setCategories] = useState([]);
   const [productsByCategory, setProductsByCategory] = useState({});
 
-  // Fetch categories from your Django backend API
+  // Fetch categories from backend
   useEffect(() => {
-    axios.get('/categories/') // Use axios to make the GET request
+    axios.get('/categories/')
       .then(response => {
         setCategories(response.data);
       })
@@ -17,7 +17,7 @@ const CategoryOverview = () => {
       });
   }, []);
 
-  // Fetch products by category from your Django backend API
+  // Fetch products by category from backend
   const fetchProductsByCategory = async (categoryId) => {
     try {
       const response = await axios.get(`/products/category/${categoryId}/`);
