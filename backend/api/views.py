@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Category, Product, Cart, CartItem
 from .serializers import (
     ProductSerializer,
+    CategorySerializer,
     CartSerializer,
 )
 
@@ -28,8 +29,9 @@ class ProductByCategoryListAPIView(APIView):
 
 class CategoryListView(APIView):
     def get(self, request):
-        categories = Category.objects.values_list("name", flat=True)
-        return Response(categories)
+        categories = Category.objects.all()
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
 
 
 class AddToCartAPIView(APIView):
