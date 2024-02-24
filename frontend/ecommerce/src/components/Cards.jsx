@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
+import axiosInstance from '../axios'; // Import axios instance
 
 // Function to generate star icons based on the average rating
 const generateStars = (rating) => {
@@ -27,13 +28,14 @@ const generateStars = (rating) => {
   return stars;
 };
 
-
-
 const Cards = ({ product }) => {
+  // Construct image URL using axios instance base URL
+  const imageUrl = `${axiosInstance.defaults.baseURL.replace(/\/$/, '')}${product.image}`;
+
   return (
     <div className="w-full max-w-[200px] flex flex-col bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
       <a href="#" className="flex justify-center items-center">
-        <img className="h-[150px] p-8 rounded-t-lg" src={product.image} alt="product image" />
+        <img className="h-[150px] p-8 rounded-t-lg" src={imageUrl} alt="product image" />
       </a>
       <div className="flex flex-col p-4" style={{ minHeight: '80px' }}>
         <div className='h-12 overflow-hidden'>
