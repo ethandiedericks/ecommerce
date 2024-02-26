@@ -1,9 +1,11 @@
-from rest_framework import viewsets, mixins
-from rest_framework.response import Response
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
 from django.db.models import Avg
+from django.shortcuts import get_object_or_404
+
+from rest_framework import viewsets, mixins
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
 from .models import (
     Category,
     Product,
@@ -45,9 +47,9 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=["get"])  # Change detail to True
-    def top_rated(self, request, pk=None):  # Add pk parameter
-        product = self.get_object()  # Get the specific product
+    @action(detail=True, methods=["get"])
+    def top_rated(self, request, pk=None):
+        product = self.get_object()
         avg_rating = product.review_set.aggregate(Avg("rating"))["rating__avg"]
         return Response({"average_rating": avg_rating})
 
