@@ -35,6 +35,13 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
+    @action(detail=True, methods=["get"])
+    def products(self, request, pk=None):
+        product = self.get_object()
+        products = product.product_set.all()
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
+
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
