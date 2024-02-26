@@ -16,7 +16,6 @@ urlpatterns = [
     path("", include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# Optionally, you can include additional URLs for custom actions
 urlpatterns += [
     path(
         "products/<int:pk>/reviews/",
@@ -27,5 +26,10 @@ urlpatterns += [
         "products/<int:pk>/top-rated/",
         views.ProductViewSet.as_view({"get": "top_rated"}),
         name="top-rated-products",
+    ),
+    path(
+        "categories/<int:pk>/products/",
+        views.CategoryViewSet.as_view({"get": "products"}),
+        name="products-by-category",
     ),
 ]
