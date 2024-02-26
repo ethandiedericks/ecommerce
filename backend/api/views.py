@@ -1,63 +1,88 @@
-from django.shortcuts import get_object_or_404
-from rest_framework.views import APIView
+from rest_framework import viewsets, mixins
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-
-from .models import Category, Product, Cart, CartItem
+from django.shortcuts import get_object_or_404
+from django.db.models import Avg
+from .models import (
+    Category,
+    Product,
+    Cart,
+    CartItem,
+    Order,
+    OrderItem,
+    Payment,
+    Review,
+    Address,
+    Refund,
+)
 from .serializers import (
     ProductSerializer,
     CategorySerializer,
     CartSerializer,
+    OrderSerializer,
+    OrderItemSerializer,
+    PaymentSerializer,
+    ReviewSerializer,
+    AddressSerializer,
+    RefundSerializer,
 )
 
 
-class ProductListAPIView(APIView):
-    def get(self, request):
-        products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+    @action(detail=True, methods=["get"])
+    def reviews(self, request, pk=None):
+        product = self.get_object()
+        reviews = product.review_set.all()
+        serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
 
-
-class ProductByCategoryListAPIView(APIView):
-    def get(self, request, category_id):
-        category = get_object_or_404(Category, pk=category_id)
-        products = Product.objects.filter(category=category)
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
+    @action(detail=True, methods=["get"])  # Change detail to True
+    def top_rated(self, request, pk=None):  # Add pk parameter
+        product = self.get_object()  # Get the specific product
+        avg_rating = product.review_set.aggregate(Avg("rating"))["rating__avg"]
+        return Response({"average_rating": avg_rating})
 
 
-class CategoryListView(APIView):
-    def get(self, request):
-        categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
-        return Response(serializer.data)
+class CartViewSet(viewsets.ModelViewSet):
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
-class AddToCartAPIView(APIView):
-    authentication_classes = [IsAuthenticated]
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        product_id = request.data.get("product_id")
-        quantity = request.data.get("quantity", 1)
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-        try:
-            product = Product.objects.get(id=product_id)
-        except Product.DoesNotExist:
-            return Response(
-                {"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND
-            )
 
-        if product.stock_level < int(quantity):
-            return Response(
-                {"error": "Not enough stock available"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
 
-        cart, created = Cart.objects.get_or_create(user=request.user)
-        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-        cart_item.quantity += int(quantity)
-        cart_item.save()
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-        serializer = CartSerializer(cart)
-        return Response(serializer.data)
+
+class AddressViewSet(viewsets.ModelViewSet):
+    queryset = Address.objects.all()
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
