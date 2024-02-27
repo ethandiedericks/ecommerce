@@ -1,18 +1,20 @@
-import './App.css'
-import Cards from './components/Cards'
+import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Import BrowserRouter, Route, Switch
 
-import Header from './components/Header/Header'
-import Hero from './components/Hero/Hero'
-import LandingPage from './pages/LandingPage'
+import Header from './components/Header/Header';
+import LandingPage from './pages/LandingPage';
+import ProductDetailPage from './pages/ProductDetailPage';
 
 function App() {
-
   return (
-    <>
+    <Router>
       <Header/>
-      <LandingPage/>
-    </>
-  )
+      <Routes>
+        <Route path="/" element={<LandingPage/>}/>
+        <Route path="/products/:productId" element={<ProductDetailPage/>} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;

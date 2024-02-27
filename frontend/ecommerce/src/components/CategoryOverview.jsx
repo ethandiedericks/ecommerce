@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Cards from './Cards';
 import axios from '../axios';
+import { Link } from 'react-router-dom';
 
 const CategoryOverview = () => {
   const [categories, setCategories] = useState([]);
@@ -20,7 +21,7 @@ const CategoryOverview = () => {
   // Fetch products by category from backend
   const fetchProductsByCategory = async (categoryId) => {
     try {
-      const response = await axios.get(`/products/category/${categoryId}/`);
+      const response = await axios.get(`/categories/${categoryId}/products`);
       return response.data;
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -54,10 +55,12 @@ const CategoryOverview = () => {
               View more
             </button>
           </div>
-          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-y-8 gap-3 md:gap-4 md:p-5 items-center'>
+          <div className='grid grid-cols-1 gap-x-2 gap-y-10 sm:grid-cols-2 lg:grid-cols-6 xl:gap-x-8'>
             {/* Render products for this category */}
             {productsByCategory[category.id]?.slice(0, window.innerWidth >= 768 ? 5 : 4).map((product, index) => (
-              <Cards key={index} product={product} />
+              <Link key={index} to={`/products/${product.id}`}>
+                <Cards key={index} product={product} />
+              </Link>
             ))}
           </div>
         </div>
