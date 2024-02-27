@@ -43,11 +43,11 @@ const ProductDetailPage = () => {
           </div>
           <div>
             <div>
-              <h4>{product.name}</h4>
+              <h1 className='text-xl font-semibold'>{product.name}</h1>
             </div>
             <Reviews averageRating={product.average_rating} />
             <div>
-              <h4>R {product.price}</h4>
+              <h1 className='text-2xl font-bold'>R {product.price}</h1>
             </div>
             <div className='flex justify-center'>
               <button className=' mt-6 flex items-center w-full justify-center rounded-md border border-transparent bg-green-600 px-8 py-3 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2'>
