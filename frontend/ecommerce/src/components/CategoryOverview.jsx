@@ -51,9 +51,12 @@ const CategoryOverview = () => {
         <div key={category.id} className='mb-8'>
           <div className='m-2 flex flex-row justify-between'>
             <span className="text-2xl font-bold text-gray-900 dark:text-white">{category.name}</span>
-            <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+            <Link
+              to={`/categories/${category.id}/products/`}
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+            >
               View more
-            </button>
+            </Link>
           </div>
           <div className='grid grid-cols-1 gap-x-2 gap-y-10 sm:grid-cols-2 lg:grid-cols-6 xl:gap-x-8'>
             {/* Render products for this category */}

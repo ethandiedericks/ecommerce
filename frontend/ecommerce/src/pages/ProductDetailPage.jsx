@@ -35,7 +35,7 @@ const ProductDetailPage = () => {
   const imageUrl = product.image.replace('/media', '/api/media');
 
   return (
-    <section className="w-full p-4 mt-20 flex justify-center bg-gray-50">
+    <section className="w-full p-4 flex justify-center bg-gray-50">
       <div className="grid grid-rows-3 gap-y-6 p-8">
         <div className='w-full md:w-[900px] justify-center items-center grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 bg-white border border-gray-200 rounded shadow p-8 dark:bg-gray-800 dark:border-gray-700'>
           <div className='flex justify-center border'>

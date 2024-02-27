@@ -9,7 +9,7 @@ const Header = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
-        <header className="absolute inset-x-0 top-0 z-50">
+        <header className=" inset-x-0 top-0 z-50">
             <nav className="flex items-center justify-between p-6 md:px-8 w-full" aria-label="Global">
                 <Logo />
                 <Bars3IconWrapper setMobileMenuOpen={setMobileMenuOpen} />
