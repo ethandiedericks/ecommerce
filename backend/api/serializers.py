@@ -1,4 +1,6 @@
+from users.serializers import CustomUserSerializer
 from rest_framework import serializers
+
 from .models import (
     Category,
     Product,
@@ -67,9 +69,10 @@ class PaymentSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    user = CustomUserSerializer()
     class Meta:
         model = Review
-        fields = "__all__"
+        fields = ("user", "product", "rating", "text", "created_at")
 
 
 class CartItemSerializer(serializers.ModelSerializer):
