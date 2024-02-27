@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from '../axios';
 import Reviews from '../components/Reviews';
+import ReviewDetails from '../components/ReviewDetails';
 
 const ProductDetailPage = () => {
   const [product, setProduct] = useState(null);
@@ -68,7 +69,7 @@ const ProductDetailPage = () => {
           </div>
         </div>
         <div className='w-full md:w-[900px] justify-center items-center grid grid-cols-1 md:grid-cols-2 gap-x-0 gap-y-10 bg-white border border-gray-200 rounded shadow p-8 dark:bg-gray-800 dark:border-gray-700'>
-          <div>
+          <div className='flex flex-col justify-center items-center'>
             <h5>Reviews:</h5>
             <Reviews averageRating={product.average_rating}/>
             <button className='flex items-center w-[200px] justify-center rounded-md border border-transparent bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'>
@@ -76,7 +77,7 @@ const ProductDetailPage = () => {
             </button>
           </div>
           <div>
-            <h5>Title:</h5>
+            <ReviewDetails productId={productId}/>
             
           </div>
         </div>
