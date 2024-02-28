@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from '../axios';
 import Cards from '../components/Cards';
+import { Link } from 'react-router-dom';
 
 const ProductByCategoryPage = () => {
   const [products, setProducts] = useState([]);
@@ -23,11 +24,16 @@ const ProductByCategoryPage = () => {
   }, [categoryId]);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-      {products.map(product => (
-        <Cards key={product.id} product={product} />
-      ))}
+    <div className='w-full p-10'>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 p-4">
+            {products.map((product, index) => (
+              <Link key={index} to={`/products/${product.id}`}>
+                <Cards key={product.id} product={product} />
+              </Link>     
+            ))}
+      </div>
     </div>
+    
   );
 }
 
