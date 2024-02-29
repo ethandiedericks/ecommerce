@@ -1,10 +1,14 @@
-const DesktopNav = () => (
+import React from 'react';
+const DesktopNav = ({ toggleLoginModal }) => (
     <div className="hidden md:flex md:flex-1 md:justify-end">
         <div className='lg:flex lg:w-1/3 md:flex md:w-3/4 md:justify-between'>
             <button className="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-700">
                 Register 
             </button>
-            <button className="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-700">
+            <button 
+                className="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-700"
+                onClick={toggleLoginModal}
+            >
                 Log in
             </button>
             <button className="hover:text-red-400">

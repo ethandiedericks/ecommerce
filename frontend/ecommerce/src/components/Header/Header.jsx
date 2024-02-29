@@ -1,22 +1,29 @@
-import { useState } from 'react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import React, { useState } from 'react';
+import { Bars3Icon } from '@heroicons/react/24/outline';
 import Logo from './Logo';
 import SearchForm from './SearchForm';
 import MobileMenu from './MobileNav';
-import DesktopMenu from './DesktopNav';
+import DesktopNav from './DesktopNav';
+import LoginModal from '../Auth/LoginModal';
 
 const Header = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [loginModalOpen, setLoginModalOpen] = useState(false);
+
+    const toggleLoginModal = () => {
+        setLoginModalOpen(prevState => !prevState);
+    };
 
     return (
-        <header className=" inset-x-0 top-0 z-50">
+        <header className="inset-x-0 top-0 z-50">
             <nav className="flex items-center justify-between p-6 md:px-8 w-full" aria-label="Global">
                 <Logo />
                 <Bars3IconWrapper setMobileMenuOpen={setMobileMenuOpen} />
                 <SearchForm />
-                <DesktopMenu />
+                <DesktopNav toggleLoginModal={toggleLoginModal} />
             </nav>
             <MobileMenu mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+            <LoginModal openModal={loginModalOpen} />
         </header>
     );
 };
