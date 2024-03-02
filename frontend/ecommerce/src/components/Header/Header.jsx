@@ -23,7 +23,7 @@ const Header = () => {
                 <DesktopNav toggleLoginModal={toggleLoginModal} />
             </nav>
             <MobileMenu mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
-            <LoginModal openModal={loginModalOpen} />
+            <LoginModal openModal={loginModalOpen} onClose={setLoginModalOpen} />
         </header>
     );
 };
