@@ -1,9 +1,9 @@
 import React from 'react';
 
-const DesktopNav = ({ toggleLoginModal }) => (
+const DesktopNav = ({ toggleLoginModal, toggleRegisterModal }) => (
     <div className="hidden md:flex md:flex-1 md:justify-end">
         <div className='lg:flex lg:w-1/3 md:flex md:w-3/4 md:justify-between'>
-            <button className="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-700">Register</button>
+            <button className="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-700" onClick={toggleRegisterModal}>Register</button>
             <button className="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-700" onClick={toggleLoginModal}>Log in</button>
             <button className="hover:text-red-400">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
