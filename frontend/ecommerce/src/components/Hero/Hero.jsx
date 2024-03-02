@@ -1,4 +1,5 @@
 import React from 'react'
+import "../../Hero.css"
 const Hero = () => {
   return (
         <div className="relative overflow-hidden">
@@ -17,7 +18,13 @@ const Hero = () => {
                     <form>
                     <div className="relative z-10 flex space-x-3 p-3 bg-white border rounded-lg shadow-lg shadow-gray-100 dark:bg-slate-900 dark:border-gray-700 dark:shadow-gray-900/[.2]">
                         <div className="flex-[1_0_0%]">
-                        <input type="email" name="hs-search-article-1" id="hs-search-article-1" className="py-2.5 px-4 block w-full border-transparent rounded-lg focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-transparent dark:text-gray-400 dark:focus:ring-gray-600" placeholder="Search for products, brands..."/>
+                        <input 
+                            type="search" 
+                            name="hs-search-article-1" 
+                            id="hs-search-article-1" 
+                            className="py-2.5 px-4 block w-full border-transparent rounded-lg dark:bg-slate-900 dark:border-transparent dark:text-gray-400" 
+                            placeholder="Search for products, brands..."
+                        />
                         </div>
                         <div className="flex-[0_0_auto]">
                         <a className="size-[46px] inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600" href="#">

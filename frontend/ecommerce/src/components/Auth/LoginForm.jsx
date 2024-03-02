@@ -30,6 +30,7 @@ function LoginForm() {
           onChange={formik.handleChange}
           value={formik.values.email}
           required
+          autoFocus
         />
       </div>
       <div>
