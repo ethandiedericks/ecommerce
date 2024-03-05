@@ -7,7 +7,7 @@ const Cards = ({ product }) => {
   const imageUrl = `${axiosInstance.defaults.baseURL.replace(/\/$/, '')}${product.image}`;
 
   return (
-    <div className="w-full max-w-[200px] flex flex-col bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+    <div className="w-full max-w-[200px] flex flex-col bg-white border border-gray-200 rounded-2xl shadow dark:bg-gray-800 dark:border-gray-700">
       <div className="flex justify-center items-center">
         <img className="h-[150px] p-8 rounded-t-lg" src={imageUrl} alt="product image" />
       </div>
