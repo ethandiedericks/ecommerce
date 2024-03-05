@@ -13,7 +13,7 @@ const Cards = ({ product }) => {
       </div>
       <div className="flex flex-col p-4">
         <div className='min-h-[80px] overflow-hidden text-ellipsis'>
-          <h5 className="text-md font-semibold tracking-tight text-gray-900 dark:text-white whitespace-wrap overflow-hidden text-ellipsis">{product.name}</h5>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
         </div>
 
         {/* Use the Reviews component */}
