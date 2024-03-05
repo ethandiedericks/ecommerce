@@ -20,6 +20,10 @@ function RegisterModal({ openModal, onClose }) {
     }
   };
 
+  const handleRegistrationSuccess = () => {
+    closeModal(); // Close the modal on successful registration
+  };
+
   return (
     <>
       {/* Main modal */}
@@ -66,7 +70,7 @@ function RegisterModal({ openModal, onClose }) {
               </div>
               {/* Modal body */}
               <div className="p-4 md:p-5">
-                <RegisterForm />
+                <RegisterForm onSuccess={handleRegistrationSuccess} />
               </div>
             </div>
           </div>

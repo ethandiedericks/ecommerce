@@ -1,3 +1,5 @@
+import React from 'react';
+import axios from '../../axios'; // Import Axios instance
 import { useFormik } from 'formik';
 
 function LoginForm() {
@@ -6,50 +8,31 @@ function LoginForm() {
       email: '',
       password: '',
     },
-    onSubmit: values => {
-      console.log(values);
-      // Here you can add your form submission logic
+    onSubmit: async values => {
+      try {
+        const response = await axios.post('u/token/', {
+          email: values.email,
+          password: values.password,
+        });
+        // Handle successful login
+        console.log(response.data);
+      } catch (error) {
+        // Handle login error
+        console.error('Login error:', error.response.data);
+        // You can set error messages here and display them in your UI
+      }
     },
   });
 
   return (
     <form className="space-y-4" onSubmit={formik.handleSubmit}>
       <div>
-        <label
-          htmlFor="email"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
-          Email
-        </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          placeholder="name@company.com"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-          onChange={formik.handleChange}
-          value={formik.values.email}
-          required
-          autoFocus
-        />
+        <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+        <input type="email" id="email" name="email" placeholder="name@company.com" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" onChange={formik.handleChange} value={formik.values.email} required autoFocus/>
       </div>
       <div>
-        <label
-          htmlFor="password"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
-          Password
-        </label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          placeholder="••••••••"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-          onChange={formik.handleChange}
-          value={formik.values.password}
-          required
-        />
+        <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" onChange={formik.handleChange} value={formik.values.password} required />
       </div>
       <div className="flex justify-end">
         <a href="#" className="text-sm text-blue-700 hover:underline dark:text-blue-500">
