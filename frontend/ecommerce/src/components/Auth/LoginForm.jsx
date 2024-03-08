@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import { toast } from 'react-toastify';
-import { loginUser } from '../../services/api';
+import { loginUser } from '../../services/auth';
 
 function LoginForm({ onLogin }) {
   const [loading, setLoading] = useState(false);
@@ -32,16 +32,9 @@ function LoginForm({ onLogin }) {
       setLoading(true);
       try {
         const response = await loginUser(values.email, values.password);
-        // Handle successful login
         toast.success('Login successful!');
-        const { access, refresh } = response.data;
-        localStorage.setItem('access_token', access);
-        localStorage.setItem('refresh_token', refresh);
-        console.log(response.data);
-        // Update authentication state in the parent component
         onLogin(true);
       } catch (error) {
-        // Handle login error
         console.error('Login error:', error.message);
         toast.error('Login failed. Please try again later.');
       } finally {

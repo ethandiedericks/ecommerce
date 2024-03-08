@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import { toast } from 'react-toastify';
-import { registerUser } from '../../services/api';
+import { registerUser } from '../../services/auth';
 
 function RegisterForm({ onSuccess }) {
   const [loading, setLoading] = useState(false);
@@ -51,10 +51,8 @@ function RegisterForm({ onSuccess }) {
       setLoading(true);
       try {
         const response = await registerUser(values);
-        // Handle successful registration
         toast.success('Registration successful!');
-        onSuccess(); // Call onSuccess callback to close the modal
-        console.log(response.data);
+        onSuccess(); 
       } catch (error) {
         // Handle registration error
         if (error.response) {
