@@ -32,9 +32,6 @@ urlpatterns += [
         views.CategoryViewSet.as_view({"get": "products"}),
         name="products-by-category",
     ),
-    path(
-        "carts/<int:pk>/addtocart/",
-        views.CartViewSet.as_view({"post": "addtocart"}),
-        name="addtocart",
-    ),
+   path('cart/add/', views.CartViewSet.as_view({'post': 'create'}), name='add_to_cart'),
+
 ]

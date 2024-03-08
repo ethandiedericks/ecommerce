@@ -29,3 +29,4 @@ def create_initial_categories(sender, **kwargs):
             ]
             for category_name in categories:
                 Category.objects.create(name=category_name)
+

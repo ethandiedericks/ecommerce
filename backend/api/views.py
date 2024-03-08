@@ -62,33 +62,41 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Response({"average_rating": avg_rating})
 
 
-class CartViewSet(viewsets.ModelViewSet):
+class CartViewSet(viewsets.ViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
-    permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    @action(detail=True, methods=["post"]) 
-    def addtocart(self, request, pk=None):
-        cart = self.get_object()
+    def create(self, request):
+        # Check if the user has an active cart, if not, create one
+        user = request.user
+        cart, created = Cart.objects.get_or_create(user=user)
+        
+        # Validate request data
         serializer = CartItemSerializer(data=request.data)
         if serializer.is_valid():
             product_id = serializer.validated_data.get('product')
             quantity = serializer.validated_data.get('quantity', 1)
+            
+            # Retrieve the product
             product = get_object_or_404(Product, pk=product_id)
+            
+            # Check if the product is already in the cart, if yes, update quantity, else add new item
             cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
             if not created:
                 cart_item.quantity += quantity
-                cart_item.save()
             else:
                 cart_item.quantity = quantity
-                cart_item.save()
-            return Response(status=status.HTTP_201_CREATED)
+            cart_item.save()
+            
+            # Calculate total price of items in cart
+            total_price = sum(item.product.price * item.quantity for item in cart.items.all())
+            cart.total_price = total_price
+            cart.save()
+
+            return Response({'detail': 'Product added to cart successfully'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
+    
+    
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
