@@ -1,5 +1,3 @@
-// api.js
-
 import axios from 'axios';
 
 const instance = axios.create({
@@ -16,7 +14,7 @@ export const fetchCategories = async () => {
   }
 };
 
-export const fetchProductsByCategory = async categoryId => {
+export const fetchProductsByCategory = async (categoryId) => {
   try {
     const response = await instance.get(`/categories/${categoryId}/products`);
     return response.data;
@@ -26,7 +24,17 @@ export const fetchProductsByCategory = async categoryId => {
   }
 };
 
-export const fetchReviewsByProduct = async productId => {
+export const fetchProductById = async (productId) => {
+  try {
+    const response = await instance.get(`/products/${productId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    throw error;
+  }
+};
+
+export const fetchReviewsByProduct = async (productId) => {
   try {
     const response = await instance.get(`/products/${productId}/reviews/`);
     return response.data;
@@ -36,3 +44,18 @@ export const fetchReviewsByProduct = async productId => {
   }
 };
 
+export const addToCart = async (productId) => {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    await instance.post(`carts/${productId}/addtocart/`, { product: productId }, { headers: { Authorization: `Bearer ${token}` } });
+    console.log('Product added to cart successfully');
+    // Optionally, you can return response data or handle success differently.
+  } catch (error) {
+    console.error('Error adding product to cart:', error);
+    throw error;
+  }
+};

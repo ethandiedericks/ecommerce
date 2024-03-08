@@ -38,7 +38,6 @@ export const logoutUser = async () => {
     if (response.status === 200) {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
-      console.log('Logged out successfully.');
     } else {
       console.error('Logout failed:', response.data.message);
     }

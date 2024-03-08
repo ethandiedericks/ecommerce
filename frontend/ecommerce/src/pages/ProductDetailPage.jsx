@@ -1,48 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from '../axios';
+import { fetchProductById } from '../services/api';
 import Reviews from '../components/Reviews';
 import ReviewDetails from '../components/ReviewDetails';
 
 const ProductDetailPage = () => {
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { productId } = useParams();
 
   useEffect(() => {
     const fetchProduct = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const response = await axios.get(`/products/${productId}`);
-        setProduct(response.data);
+        if (productId) {
+          const data = await fetchProductById(productId);
+          setProduct(data);
+        }
       } catch (error) {
+        setError('Error fetching product. Please try again later.');
         console.error('Error fetching product:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (productId) {
-      fetchProduct();
-    }
+    fetchProduct();
   }, [productId]);
 
   const handleAddToCart = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        throw new Error('User is not authenticated');
-      }
-  
-      await axios.post(`carts/${productId}/addtocart/`, { product: productId }, { headers: { Authorization: `Bearer ${token}` } });
-      console.log('Product added to cart successfully');
-      // Optionally, you can redirect the user to the cart page or show a success message.
+      await addToCart(productId);
     } catch (error) {
       console.error('Error adding product to cart:', error);
-      // Handle error scenarios, such as displaying an error message to the user.
     }
   };
-  
 
   if (!product) {
     return <div className="mt-6 flex items-center justify-center h-screen">Loading...</div>;
   }
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+
 
   const imageUrl = product.image.replace('/media', '/api/media');
 
