@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import axios from '../../axios';
 import { useFormik } from 'formik';
 import { toast } from 'react-toastify';
+import { loginUser } from '../../services/api';
 
 function LoginForm({ onLogin }) {
   const [loading, setLoading] = useState(false);
@@ -31,10 +31,7 @@ function LoginForm({ onLogin }) {
     onSubmit: async values => {
       setLoading(true);
       try {
-        const response = await axios.post('u/token/', {
-          email: values.email,
-          password: values.password
-        });
+        const response = await loginUser(values.email, values.password);
         // Handle successful login
         toast.success('Login successful!');
         const { access, refresh } = response.data;

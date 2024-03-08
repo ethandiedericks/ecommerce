@@ -1,8 +1,7 @@
-// RegisterForm.jsx
 import React, { useState } from 'react';
-import axios from '../../axios';
 import { useFormik } from 'formik';
 import { toast } from 'react-toastify';
+import { registerUser } from '../../services/api';
 
 function RegisterForm({ onSuccess }) {
   const [loading, setLoading] = useState(false);
@@ -51,13 +50,7 @@ function RegisterForm({ onSuccess }) {
     onSubmit: async values => {
       setLoading(true);
       try {
-        const response = await axios.post('u/register/', {
-          email: values.email,
-          first_name: values.first_name,
-          last_name: values.last_name,
-          password: values.password,
-          confirm_password: values.confirm_password,
-        });
+        const response = await registerUser(values);
         // Handle successful registration
         toast.success('Registration successful!');
         onSuccess(); // Call onSuccess callback to close the modal

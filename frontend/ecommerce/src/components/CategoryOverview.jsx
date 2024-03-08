@@ -1,49 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import Cards from './Cards';
-import axios from '../axios';
 import { Link } from 'react-router-dom';
+import { fetchCategories, fetchProductsByCategory } from '../services/api';
+import Cards from './Cards';
 
 const CategoryOverview = () => {
   const [categories, setCategories] = useState([]);
   const [productsByCategory, setProductsByCategory] = useState({});
 
-  // Fetch categories from backend
   useEffect(() => {
-    axios
-      .get('/categories/')
-      .then(response => {
-        setCategories(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching categories:', error);
-      });
+    const fetchData = async () => {
+      try {
+        const categoriesData = await fetchCategories();
+        setCategories(categoriesData);
+
+        const productsByCategoryMap = {};
+        for (const category of categoriesData) {
+          const products = await fetchProductsByCategory(category.id);
+          productsByCategoryMap[category.id] = products;
+        }
+        setProductsByCategory(productsByCategoryMap);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  // Fetch products by category from backend
-  const fetchProductsByCategory = async categoryId => {
-    try {
-      const response = await axios.get(`/categories/${categoryId}/products`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      return [];
-    }
-  };
-
-  // Fetch products for each category and store them in state
-  useEffect(() => {
-    const fetchProductsForAllCategories = async () => {
-      const productsByCategoryMap = {};
-      for (const category of categories) {
-        const products = await fetchProductsByCategory(category.id);
-        productsByCategoryMap[category.id] = products;
-      }
-      setProductsByCategory(productsByCategoryMap);
-    };
-    fetchProductsForAllCategories();
-  }, [categories]);
-
-  // Filter categories that have associated products
   const categoriesWithProducts = categories.filter(
     category => productsByCategory[category.id]?.length > 0
   );
