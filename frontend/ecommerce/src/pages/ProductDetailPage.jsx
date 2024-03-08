@@ -23,10 +23,22 @@ const ProductDetailPage = () => {
     }
   }, [productId]);
 
-  const handleAddToCart = () => {
-    // Implement your logic to add the product to the cart
-    console.log('Product added to cart:', product);
+  const handleAddToCart = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        throw new Error('User is not authenticated');
+      }
+  
+      await axios.post(`carts/${productId}/addtocart/`, { product: productId }, { headers: { Authorization: `Bearer ${token}` } });
+      console.log('Product added to cart successfully');
+      // Optionally, you can redirect the user to the cart page or show a success message.
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+      // Handle error scenarios, such as displaying an error message to the user.
+    }
   };
+  
 
   if (!product) {
     return <div className="mt-6 flex items-center justify-center h-screen">Loading...</div>;
