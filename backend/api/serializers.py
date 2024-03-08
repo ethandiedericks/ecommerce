@@ -70,6 +70,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     user = CustomUserSerializer()
+
     class Meta:
         model = Review
         fields = ("user", "product", "rating", "text", "created_at")

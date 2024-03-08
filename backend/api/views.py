@@ -1,7 +1,7 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -28,6 +28,7 @@ from .serializers import (
     ReviewSerializer,
     AddressSerializer,
     RefundSerializer,
+    CartItemSerializer, # Importing CartItemSerializer
 )
 
 
@@ -37,8 +38,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"])
     def products(self, request, pk=None):
-        product = self.get_object()
-        products = product.product_set.all()
+        category = self.get_object()
+        products = category.product_set.all()
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
 
@@ -69,6 +70,24 @@ class CartViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    @action(detail=True, methods=["post"]) 
+    def addtocart(self, request, pk=None):
+        cart = self.get_object()
+        serializer = CartItemSerializer(data=request.data)
+        if serializer.is_valid():
+            product_id = serializer.validated_data.get('product')
+            quantity = serializer.validated_data.get('quantity', 1)
+            product = get_object_or_404(Product, pk=product_id)
+            cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+            if not created:
+                cart_item.quantity += quantity
+                cart_item.save()
+            else:
+                cart_item.quantity = quantity
+                cart_item.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
@@ -95,3 +114,9 @@ class AddressViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class RefundViewSet(viewsets.ModelViewSet):
+    queryset = Refund.objects.all()
+    serializer_class = RefundSerializer
+    permission_classes = [IsAuthenticated]
