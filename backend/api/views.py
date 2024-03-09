@@ -13,7 +13,7 @@ from .models import (
     Cart,
     Order,
     OrderItem,
-    Payment,
+    Checkout,
     Review,
     Address,
     Refund,
@@ -24,7 +24,7 @@ from .serializers import (
     CartSerializer,
     OrderSerializer,
     OrderItemSerializer,
-    PaymentSerializer,
+    CheckoutSerializer,
     ReviewSerializer,
     AddressSerializer,
     RefundSerializer,
@@ -71,7 +71,6 @@ class CartViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def get_queryset(self):
-        # Only allow users to view their own carts
         return Cart.objects.filter(user=self.request.user)
     
 class OrderViewSet(viewsets.ModelViewSet):

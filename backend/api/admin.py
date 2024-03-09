@@ -4,7 +4,7 @@ from .models import (
     Product,
     Order,
     OrderItem,
-    Payment,
+    Checkout,
     Review,
     Cart,
     Address,
@@ -62,8 +62,8 @@ class OrderItemAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(Payment)
-class PaymentAdmin(admin.ModelAdmin):
+@admin.register(Checkout)
+class CheckoutAdmin(admin.ModelAdmin):
     list_display = (
         "order",
         "amount",

@@ -6,7 +6,7 @@ from .models import (
     Product,
     Order,
     OrderItem,
-    Payment,
+    Checkout,
     Review,
     Cart,
     Address,
@@ -61,9 +61,9 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class PaymentSerializer(serializers.ModelSerializer):
+class CheckoutSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Payment
+        model = Checkout
         fields = "__all__"
 
 
