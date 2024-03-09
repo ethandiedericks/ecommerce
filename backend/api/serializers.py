@@ -9,7 +9,6 @@ from .models import (
     Payment,
     Review,
     Cart,
-    CartItem,
     Address,
     Refund,
 )
@@ -75,25 +74,14 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = ("user", "product", "rating", "text", "created_at")
 
-
-class CartItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CartItem
-        fields = ('product', 'quantity')
-
 class CartSerializer(serializers.ModelSerializer):
-    items = serializers.SerializerMethodField()  # Custom representation for items
-
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    product = ProductSerializer()
+    
     class Meta:
         model = Cart
-        fields = ('id', 'user', 'items', 'total_price')  # Add other fields if needed
-
-    def get_items(self, obj):
-        # Get the products associated with cart items and return their names
-        products = [item.product.name for item in obj.cartitem_set.all()]
-        return products
-
-
+        fields = ['id', 'user', 'product', 'quantity', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
 
 class RefundSerializer(serializers.ModelSerializer):
     class Meta:

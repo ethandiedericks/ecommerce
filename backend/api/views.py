@@ -5,12 +5,12 @@ from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import (
     Category,
     Product,
     Cart,
-    CartItem,
     Order,
     OrderItem,
     Payment,
@@ -28,7 +28,6 @@ from .serializers import (
     ReviewSerializer,
     AddressSerializer,
     RefundSerializer,
-    CartItemSerializer, # Importing CartItemSerializer
 )
 
 
@@ -61,33 +60,19 @@ class ProductViewSet(viewsets.ModelViewSet):
         avg_rating = product.review_set.aggregate(Avg("rating"))["rating__avg"]
         return Response({"average_rating": avg_rating})
 
-class CartItemViewSet(viewsets.ViewSet):
+
+class CartViewSet(viewsets.ModelViewSet):
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
+    authentication_classes = [JWTAuthentication] 
     permission_classes = [IsAuthenticated]
 
-    def create(self, request):
-        serializer = CartItemSerializer(data=request.data)
-        if serializer.is_valid():
-            user = request.user
-            cart, created = Cart.objects.get_or_create(user=user)
-            serializer.save(cart=cart)  # Assign the cart object
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-            # Recalculate total price of the cart
-            cart.total_price = CartItem.objects.filter(cart=cart).aggregate(Sum('product__price'))['product__price__sum']
-            cart.save()
-
-            return Response({'detail': 'Product added to cart successfully'}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class CartViewSet(viewsets.ViewSet):
-    permission_classes = [IsAuthenticated]
-
-    def retrieve(self, request, pk=None):
-        user = request.user
-        cart = get_object_or_404(Cart, user=user)
-        serializer = CartSerializer(cart, many=False)  # Change many to False
-        return Response(serializer.data)
-
-    
+    def get_queryset(self):
+        # Only allow users to view their own carts
+        return Cart.objects.filter(user=self.request.user)
     
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()

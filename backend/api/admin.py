@@ -7,7 +7,6 @@ from .models import (
     Payment,
     Review,
     Cart,
-    CartItem,
     Address,
     Refund,
 )
@@ -87,17 +86,17 @@ class ReviewAdmin(admin.ModelAdmin):
 class CartAdmin(admin.ModelAdmin):
     list_display = (
         "user",
-        "total_price",
-    )
-
-
-@admin.register(CartItem)
-class CartItemAdmin(admin.ModelAdmin):
-    list_display = (
-        "cart",
         "product",
         "quantity",
+        "created_at",
+        "updated_at",
     )
+    readonly_fields = ("created_at", "updated_at")
+
+    def total_price(self, obj):
+        return obj.product.price * obj.quantity
+
+    total_price.short_description = "Total Price"
 
 
 @admin.register(Address)
