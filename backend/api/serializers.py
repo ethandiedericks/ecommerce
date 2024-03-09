@@ -79,15 +79,20 @@ class ReviewSerializer(serializers.ModelSerializer):
 class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
-        fields = "__all__"
-
+        fields = ('product', 'quantity')
 
 class CartSerializer(serializers.ModelSerializer):
-    items = CartItemSerializer(many=True, read_only=True)
+    items = serializers.SerializerMethodField()  # Custom representation for items
 
     class Meta:
         model = Cart
-        fields = "__all__"
+        fields = ('id', 'user', 'items', 'total_price')  # Add other fields if needed
+
+    def get_items(self, obj):
+        # Get the products associated with cart items and return their names
+        products = [item.product.name for item in obj.cartitem_set.all()]
+        return products
+
 
 
 class RefundSerializer(serializers.ModelSerializer):

@@ -1,4 +1,4 @@
-from django.db.models import Avg
+from django.db.models import Avg, Sum
 from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets, mixins, status
@@ -61,40 +61,32 @@ class ProductViewSet(viewsets.ModelViewSet):
         avg_rating = product.review_set.aggregate(Avg("rating"))["rating__avg"]
         return Response({"average_rating": avg_rating})
 
-
-class CartViewSet(viewsets.ViewSet):
-    queryset = Cart.objects.all()
-    serializer_class = CartSerializer
+class CartItemViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
 
     def create(self, request):
-        # Check if the user has an active cart, if not, create one
-        user = request.user
-        cart, created = Cart.objects.get_or_create(user=user)
-        
-        # Validate request data
         serializer = CartItemSerializer(data=request.data)
         if serializer.is_valid():
-            product_id = serializer.validated_data.get('product')
-            quantity = serializer.validated_data.get('quantity', 1)
-            
-            # Retrieve the product
-            product = get_object_or_404(Product, pk=product_id)
-            
-            # Check if the product is already in the cart, if yes, update quantity, else add new item
-            cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-            if not created:
-                cart_item.quantity += quantity
-            else:
-                cart_item.quantity = quantity
-            cart_item.save()
-            
-            # Calculate total price of items in cart
-            total_price = sum(item.product.price * item.quantity for item in cart.items.all())
-            cart.total_price = total_price
+            user = request.user
+            cart, created = Cart.objects.get_or_create(user=user)
+            serializer.save(cart=cart)  # Assign the cart object
+
+            # Recalculate total price of the cart
+            cart.total_price = CartItem.objects.filter(cart=cart).aggregate(Sum('product__price'))['product__price__sum']
             cart.save()
 
             return Response({'detail': 'Product added to cart successfully'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CartViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def retrieve(self, request, pk=None):
+        user = request.user
+        cart = get_object_or_404(Cart, user=user)
+        serializer = CartSerializer(cart, many=False)  # Change many to False
+        return Response(serializer.data)
+
     
     
 class OrderViewSet(viewsets.ModelViewSet):

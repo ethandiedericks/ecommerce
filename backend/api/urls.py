@@ -7,16 +7,12 @@ from . import views
 router = DefaultRouter()
 router.register(r"categories", views.CategoryViewSet)
 router.register(r"products", views.ProductViewSet)
-router.register(r"carts", views.CartViewSet)
-router.register(r"orders", views.OrderViewSet)
-router.register(r"reviews", views.ReviewViewSet)
 router.register(r"addresses", views.AddressViewSet)
+router.register(r"reviews", views.ReviewViewSet)
+router.register(r"refunds", views.RefundViewSet)
 
 urlpatterns = [
     path("", include(router.urls)),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-urlpatterns += [
     path(
         "products/<int:pk>/reviews/",
         views.ProductViewSet.as_view({"get": "reviews"}),
@@ -32,6 +28,8 @@ urlpatterns += [
         views.CategoryViewSet.as_view({"get": "products"}),
         name="products-by-category",
     ),
-   path('cart/add/', views.CartViewSet.as_view({'post': 'create'}), name='add_to_cart'),
-
+    path('cart/', views.CartViewSet.as_view({'get': 'retrieve'}), name='cart'),
+    path('cart/items/', views.CartItemViewSet.as_view({'post': 'create'}), name='cart-items'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
