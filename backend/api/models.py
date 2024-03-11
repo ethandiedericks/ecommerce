@@ -81,12 +81,17 @@ class Review(models.Model):
 class Cart(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)  # Added quantity field
+    quantity = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ('user', 'product')
+
+    @property
+    def total_price(self):
+        return self.quantity * self.product.price
+
 
 class Address(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)

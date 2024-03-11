@@ -42,9 +42,10 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class AddressSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = Address
-        fields = "__all__"
+        fields = ("id", "user", "street_address", "city", "state", "country", "zip_code")
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -75,13 +76,12 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ("user", "product", "rating", "text", "created_at")
 
 class CartSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
-    product = ProductSerializer()
-    
+    total_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    product = ProductSerializer(read_only=True)
     class Meta:
         model = Cart
-        fields = ['id', 'user', 'product', 'quantity', 'created_at', 'updated_at']
-        read_only_fields = ['created_at', 'updated_at']
+        fields = ['id', 'user', 'product', 'quantity', 'total_price']
+
 
 class RefundSerializer(serializers.ModelSerializer):
     class Meta:
