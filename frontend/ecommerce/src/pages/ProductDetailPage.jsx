@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchProductById } from '../services/api';
+import { fetchProductById, addToCart } from '../services/api';
 import Reviews from '../components/Reviews';
 import ReviewDetails from '../components/ReviewDetails';
 
@@ -50,13 +50,11 @@ const ProductDetailPage = () => {
     return <div>{error}</div>;
   }
 
-
-
   const imageUrl = product.image.replace('/media', '/api/media');
 
   return (
     <section className="w-full p-4 flex justify-center bg-gray-50">
-      <div className="max-w-7xl mx-auto grid grid-rows-3 gap-y-8 p-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 gap-y-8 p-8">
         <div className="w-full grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 bg-white border border-gray-200 rounded-lg shadow p-8 dark:bg-gray-800 dark:border-gray-700">
           <div className="flex justify-center">
             <img src={imageUrl} className="max-h-[500px] rounded-lg" alt={product.name} />
@@ -69,26 +67,13 @@ const ProductDetailPage = () => {
             </div>
             <div className="mt-8">
               <button
-                className="flex items-center justify-center w-full rounded-md border border-transparent bg-green-600 px-8 py-3 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                className="flex text-sm font-bold items-center justify-center space-x-2 text-white bg-green-600 w-full p-3 rounded-md border border-transparent hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                 onClick={handleAddToCart}
               >
-                <span className="mr-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
-                    />
-                  </svg>
-                </span>
-                Add to Cart
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="bi h-5 w-5 bi-cart" viewBox="0 0 16 16">
+                  <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                </svg>
+                <span>Add to Cart</span>
               </button>
             </div>
           </div>
