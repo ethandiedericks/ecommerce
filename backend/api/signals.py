@@ -1,6 +1,7 @@
 from django.db.models.signals import post_migrate
 from django.apps import apps
 from django.dispatch import receiver
+
 from .models import Category
 
 
@@ -29,4 +30,3 @@ def create_initial_categories(sender, **kwargs):
             ]
             for category_name in categories:
                 Category.objects.create(name=category_name)
-

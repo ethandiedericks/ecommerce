@@ -1,9 +1,9 @@
 from django.contrib import admin
+
 from .models import (
     Category,
     Product,
     Order,
-    OrderItem,
     Checkout,
     Review,
     Cart,
@@ -50,16 +50,6 @@ class OrderAdmin(admin.ModelAdmin):
         "status",
     )
     date_hierarchy = "created_at"
-
-
-@admin.register(OrderItem)
-class OrderItemAdmin(admin.ModelAdmin):
-    list_display = (
-        "order",
-        "product",
-        "quantity",
-        "price",
-    )
 
 
 @admin.register(Checkout)

@@ -1,89 +1,80 @@
-from users.serializers import CustomUserSerializer
 from rest_framework import serializers
-
 from .models import (
     Category,
     Product,
-    Order,
-    OrderItem,
-    Checkout,
-    Review,
     Cart,
+    Order,
+    Review,
     Address,
     Refund,
+    Checkout,
 )
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ("id", "name")
+        fields = "__all__"
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    category = CategorySerializer(read_only=True)
     average_rating = serializers.SerializerMethodField()
-    category = CategorySerializer()
+
+    class Meta:
+        model = Product
+        fields = "__all__"
 
     def get_average_rating(self, obj):
         return Review.get_average_rating(obj.id)
 
+
+class CartSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+
     class Meta:
-        model = Product
-        fields = (
-            "id",
-            "name",
-            "description",
-            "price",
-            "category",
-            "stock_level",
-            "image",
-            "average_rating",
-        )
+        model = Cart
+        fields = "__all__"
 
 
 class AddressSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = Address
-        fields = ("id", "user", "street_address", "city", "state", "country", "zip_code")
-
-
-class OrderItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderItem
         fields = "__all__"
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(many=True, read_only=True)
+    shipping_address = AddressSerializer(read_only=True)
+    billing_address = AddressSerializer(read_only=True)
+    products = ProductSerializer(many=True, read_only=True)
 
     class Meta:
         model = Order
+        fields = [
+            "id",
+            "total_price",
+            "status",
+            "created_at",
+            "user",
+            "shipping_address",
+            "billing_address",
+            "products",
+        ]
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = "__all__"
+
+
+class RefundSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Refund
         fields = "__all__"
 
 
 class CheckoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Checkout
-        fields = "__all__"
-
-
-class ReviewSerializer(serializers.ModelSerializer):
-    user = CustomUserSerializer()
-
-    class Meta:
-        model = Review
-        fields = ("user", "product", "rating", "text", "created_at")
-
-class CartSerializer(serializers.ModelSerializer):
-    total_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
-    product = ProductSerializer(read_only=True)
-    class Meta:
-        model = Cart
-        fields = ['id', 'user', 'product', 'quantity', 'total_price']
-
-
-class RefundSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Refund
         fields = "__all__"
