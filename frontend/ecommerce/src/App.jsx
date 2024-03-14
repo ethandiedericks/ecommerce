@@ -5,6 +5,8 @@ import Header from './components/Header/Header';
 import LandingPage from './pages/LandingPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import ProductByCategoryPage from './pages/ProductByCategoryPage';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -15,6 +17,17 @@ function App() {
         <Route path="/products/:productId" element={<ProductDetailPage/>} />
         <Route path="/categories/:categoryId/products/" element={<ProductByCategoryPage/>}/>
       </Routes>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Router>
   );
 }

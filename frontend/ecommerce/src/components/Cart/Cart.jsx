@@ -4,10 +4,14 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { fetchCartItems, removeCartItem } from '../../services/api';
 import CartItem from './CartItem';
 
-const Cart = () => {
-  const [open, setOpen] = useState(true);
+const Cart = ({ openCart, onCloseCart }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [subtotal, setSubtotal] = useState(0);
+
+  useEffect(() => {
+    setIsOpen(openCart);
+  }, [openCart]);
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -20,12 +24,14 @@ const Cart = () => {
       }
     };
 
-    fetchCart();
+    if (isOpen) {
+      fetchCart();
+    }
 
     return () => {
       // Cleanup code if needed
     };
-  }, []);
+  }, [isOpen]);
 
   const calculateSubtotal = (items) => {
     const total = items.reduce((acc, item) => acc + item.quantity * parseFloat(item.product.price), 0);
@@ -56,9 +62,13 @@ const Cart = () => {
     );
   };
 
+  const closeCart = () => {
+    setIsOpen(false);
+    onCloseCart();
+  };
   return (
-    <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={setOpen}>
+    <Transition.Root show={isOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-10" onClose={closeCart}>
         <Transition.Child
           as={Fragment}
           enter="ease-in-out duration-500"
@@ -92,7 +102,7 @@ const Cart = () => {
                           <button
                             type="button"
                             className="relative -m-2 p-2 text-gray-400 hover:text-gray-500"
-                            onClick={() => setOpen(false)}
+                            onClick={() => closeCart()}
                           >
                             <span className="absolute -inset-0.5" />
                             <span className="sr-only">Close panel</span>
@@ -113,7 +123,7 @@ const Cart = () => {
                       </div>
                       <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
                       <div className="mt-6">
-                        <a href="#" className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700">
+                        <a href="#" className="flex items-center justify-center rounded-md border border-transparent bg-green-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700">
                           Checkout
                         </a>
                       </div>

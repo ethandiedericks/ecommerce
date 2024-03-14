@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { fetchProductById, addToCart } from '../services/api';
 import Reviews from '../components/Reviews';
 import ReviewDetails from '../components/ReviewDetails';
+import { toast } from 'react-toastify';
 
 const ProductDetailPage = () => {
   const [product, setProduct] = useState(null);
@@ -33,14 +34,28 @@ const ProductDetailPage = () => {
   const handleAddToCart = async () => {
     try {
       await addToCart(productId);
+      toast.success(`${product.name} added to cart!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     } catch (error) {
       console.error('Error adding product to cart:', error);
+      toast.error('Error adding product to cart', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
   };
-
-  if (!product) {
-    return <div className="mt-6 flex items-center justify-center h-screen">Loading...</div>;
-  }
 
   if (loading) {
     return <div>Loading...</div>;
@@ -53,9 +68,9 @@ const ProductDetailPage = () => {
   const imageUrl = product.image.replace('/media', '/api/media');
 
   return (
-    <section className="w-full p-4 flex justify-center bg-gray-50">
+    <section className="w-full p-4 bg-gray-50">
       <div className="max-w-7xl mx-auto grid grid-cols-1 gap-y-8 p-8">
-        <div className="w-full grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 bg-white border border-gray-200 rounded-lg shadow p-8 dark:bg-gray-800 dark:border-gray-700">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10 bg-white border border-gray-200 rounded-lg shadow p-8">
           <div className="flex justify-center">
             <img src={imageUrl} className="max-h-[500px] rounded-lg" alt={product.name} />
           </div>
@@ -67,7 +82,7 @@ const ProductDetailPage = () => {
             </div>
             <div className="mt-8">
               <button
-                className="flex text-sm font-bold items-center justify-center space-x-2 text-white bg-green-600 w-full p-3 rounded-md border border-transparent hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                className="flex text-sm font-bold items-center justify-center space-x-2 text-white bg-green-600 w-full p-3 rounded-md border border-transparent hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 onClick={handleAddToCart}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="bi h-5 w-5 bi-cart" viewBox="0 0 16 16">
@@ -78,11 +93,11 @@ const ProductDetailPage = () => {
             </div>
           </div>
         </div>
-        <div className="w-full bg-white border border-gray-200 rounded-lg shadow p-8 dark:bg-gray-800 dark:border-gray-700">
+        <div className="w-full bg-white border border-gray-200 rounded-lg shadow p-8">
           <h5 className="text-xl font-semibold mb-4">Description:</h5>
           <p>{product.description}</p>
         </div>
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 bg-white border border-gray-200 rounded-lg shadow p-8 dark:bg-gray-800 dark:border-gray-700">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 bg-white border border-gray-200 rounded-lg shadow p-8">
           <div className="flex flex-col justify-center items-center">
             <h5 className="text-xl font-semibold mb-4">Reviews:</h5>
             <Reviews averageRating={product.average_rating} />
