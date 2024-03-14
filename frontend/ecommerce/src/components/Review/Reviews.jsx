@@ -1,5 +1,5 @@
 import React from 'react';
-import generateStars from '../utils/stars';
+import generateStars from '../../utils/stars';
 
 const Reviews = ({ averageRating }) => {
   return (

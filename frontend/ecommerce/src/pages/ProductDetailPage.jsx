@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchProductById, addToCart } from '../services/api';
-import Reviews from '../components/Reviews';
-import ReviewDetails from '../components/ReviewDetails';
+import Reviews from '../components/Review/Reviews';
+import ReviewDetails from '../components/Review/ReviewDetails';
+import ReviewModal from '../components/Review/ReviewModal';
+import ReviewForm from '../components/Review/ReviewForm'; // Import the ReviewForm component
 import { toast } from 'react-toastify';
 
 const ProductDetailPage = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false); // State for review modal visibility
   const { productId } = useParams();
 
   useEffect(() => {
@@ -64,7 +67,6 @@ const ProductDetailPage = () => {
   if (error) {
     return <div>{error}</div>;
   }
-
   const imageUrl = product.image.replace('/media', '/api/media');
 
   return (
@@ -101,7 +103,10 @@ const ProductDetailPage = () => {
           <div className="flex flex-col justify-center items-center">
             <h5 className="text-xl font-semibold mb-4">Reviews:</h5>
             <Reviews averageRating={product.average_rating} />
-            <button className="mt-4 flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            <button 
+              className="mt-4 flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              onClick={() => setReviewModalOpen(true)} // Open review modal when clicked
+            >
               Write a review
             </button>
           </div>
@@ -110,6 +115,8 @@ const ProductDetailPage = () => {
           </div>
         </div>
       </div>
+      <ReviewModal openModal={reviewModalOpen} onClose={() => setReviewModalOpen(false)} productId={productId}/>
+     
     </section>
   );
 };

@@ -154,3 +154,19 @@ export const removeCartItem = async (itemId) => {
     throw error;
   }
 };
+
+export const submitReview = async (productId, reviewData) => {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+    console.log({ product_id: productId, ...reviewData })
+    const response = await instance.post(`reviews/`, { product_id: productId, ...reviewData }, { headers: { Authorization: `Bearer ${token}` } });
+    console.log('Review submitted successfully:', response.data);
+    // Optionally, you can return response data or handle success differently.
+  } catch (error) {
+    console.error('Error submitting review:', error);
+    throw error;
+  }
+};

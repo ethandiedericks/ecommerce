@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { fetchReviewsByProduct } from '../services/api';
-import { formatDate, capitalizeFirstLetter } from '../utils/helpers';
-import generateStars from '../utils/stars';
+import { fetchReviewsByProduct } from '../../services/api';
+import { formatDate, capitalizeFirstLetter } from '../../utils/helpers';
+import generateStars from '../../utils/stars';
 
 const ReviewDetails = ({ productId }) => {
   const [reviews, setReviews] = useState([]);

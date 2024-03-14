@@ -1,6 +1,6 @@
 import React from 'react';
 import axiosInstance from '../axios';
-import Reviews from '../components/Reviews';
+import Reviews from './Review/Reviews';
 
 const Cards = ({ product }) => {
   // Construct image URL using axios instance base URL
