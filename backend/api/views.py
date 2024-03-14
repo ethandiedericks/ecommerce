@@ -37,8 +37,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
 
     @action(detail=True, methods=["get"])
     def products(self, request, pk=None):
@@ -58,8 +56,6 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
 
     @action(detail=True, methods=["get"])
     def reviews(self, request, pk=None):
@@ -141,6 +137,20 @@ class CartViewSet(CreateRetrieveViewSet):
 
         serializer = self.get_serializer(cart_instance)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=["delete"])
+    def remove_item(self, request, pk=None):
+        """
+        Removes an item from the cart.
+        """
+        try:
+            cart_item = Cart.objects.get(pk=pk, user=request.user)
+            cart_item.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Cart.DoesNotExist:
+            return Response(
+                {"detail": "Cart item not found."}, status=status.HTTP_404_NOT_FOUND
+            )
 
     def perform_create(self, serializer):
         """
@@ -235,7 +245,7 @@ class OrderViewSet(CreateRetrieveViewSet):
         return total_price
 
 
-class ReviewViewSet(CreateRetrieveViewSet):
+class ReviewViewSet(viewsets.ModelViewSet):
     """
     A ViewSet for handling CRUD operations related to Review model.
     """
@@ -245,11 +255,46 @@ class ReviewViewSet(CreateRetrieveViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        """
+        Retrieves all reviews belonging to the authenticated user.
+        """
+        return Review.objects.filter(user=self.request.user)
+
     def perform_create(self, serializer):
         """
         Sets the user for the review before creating it.
         """
         serializer.save(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        # Ensure that 'product_id' is present in the request data
+        product_id = request.data.get("product_id")
+        if not product_id:
+            return Response(
+                {"error": "Product ID is required."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            product = Product.objects.get(pk=product_id)
+        except Product.DoesNotExist:
+            raise NotFound("Product not found")
+
+        request_data = request.data.copy()
+        request_data.pop("product_id", None)
+        request_data["user"] = request.user  # Set the user field
+
+        serializer = self.get_serializer(data=request_data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            review = serializer.save(user=request.user, product=product)
+        except ValidationError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(
+            self.get_serializer(review).data, status=status.HTTP_201_CREATED
+        )
 
 
 class AddressViewSet(CreateRetrieveViewSet):

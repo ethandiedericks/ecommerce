@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Avg
+from decimal import Decimal
 from django.utils.text import slugify
 from django.contrib.auth import get_user_model
 
@@ -116,7 +117,9 @@ class Review(models.Model):
     """
 
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="reviews"
+    )
     rating = models.PositiveIntegerField()
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -132,9 +135,13 @@ class Review(models.Model):
         Returns:
         - Average rating for the product.
         """
-        return cls.objects.filter(product_id=product_id).aggregate(Avg("rating"))[
+        avg_rating = cls.objects.filter(product_id=product_id).aggregate(Avg("rating"))[
             "rating__avg"
         ]
+        if avg_rating is not None:
+            # Round the average rating to one decimal place
+            avg_rating = round(Decimal(avg_rating), 1)
+        return avg_rating
 
 
 class Cart(models.Model):

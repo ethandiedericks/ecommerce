@@ -9,6 +9,7 @@ from .models import (
     Refund,
     Checkout,
 )
+from users.serializers import CustomUserSerializer
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -63,6 +64,9 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+    user = CustomUserSerializer(read_only=True)
+
     class Meta:
         model = Review
         fields = "__all__"
