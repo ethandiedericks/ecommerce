@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import NavigationItem from './NavigationItem';
 import AuthButtons from './AuthButtons';
-import Cart from '../Cart'; // Import your Cart component
+import Cart from '../Cart/Cart'; // Import your Cart component
 
 const DesktopNav = ({ isAuthenticated, toggleLoginModal, toggleRegisterModal, handleLogout }) => {
   const [cartOpen, setCartOpen] = useState(false); // State to manage cart visibility
@@ -34,7 +34,7 @@ const DesktopNav = ({ isAuthenticated, toggleLoginModal, toggleRegisterModal, ha
               />
             </svg>
           }
-          onClick={() => setCartOpen(!cartOpen)} // Toggle cart visibility
+          onClick={() => setCartOpen(prevState => !prevState)} // Toggle cart visibility
         />
         {cartOpen && <Cart />}
       </div>

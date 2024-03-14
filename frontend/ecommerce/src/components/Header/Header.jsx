@@ -34,6 +34,7 @@ const Header = () => {
           isAuthenticated={isAuthenticated}
           toggleLoginModal={() => setLoginModalOpen(prevState => !prevState)}
           toggleRegisterModal={() => setRegisterModalOpen(prevState => !prevState)}
+          
           handleLogout={handleLogout}
         />
       </nav>
