@@ -28,6 +28,7 @@ from .serializers import (
     RefundSerializer,
     CheckoutSerializer,
 )
+from .stripe_utils import create_checkout_session
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -196,9 +197,6 @@ class OrderViewSet(CreateRetrieveViewSet):
 
     @action(detail=False, methods=["post"])
     def checkout(self, request):
-        """
-        Initiates the checkout process by creating a new order.
-        """
         user = request.user
 
         # Check if the user has an address
@@ -230,12 +228,14 @@ class OrderViewSet(CreateRetrieveViewSet):
             )
             order.products.set([item.product for item in cart_items])
 
+        # Create Stripe checkout session
+        session_id = create_checkout_session(order)
+
         # Clear the user's cart after checkout
         cart_items.delete()
 
-        # Return the newly created order details
-        order_serializer = OrderSerializer(order)
-        return Response(order_serializer.data, status=status.HTTP_201_CREATED)
+        # Return the Stripe checkout session ID
+        return Response({"session_id": session_id}, status=status.HTTP_200_OK)
 
     def calculate_total_price(self, cart_items):
         """
