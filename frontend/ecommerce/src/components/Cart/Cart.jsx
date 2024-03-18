@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { fetchCartItems, removeCartItem } from '../../services/api';
+import { fetchCartItems, removeCartItem, checkout } from '../../services/api';
 import CartItem from './CartItem';
 
 const Cart = ({ openCart, onCloseCart }) => {
@@ -60,6 +60,17 @@ const Cart = ({ openCart, onCloseCart }) => {
         ))}
       </ul>
     );
+  };
+  const handleCheckout = async () => {
+    try {
+      await checkout();
+      // After successful checkout, you might want to clear the cart or perform other actions
+      setCartItems([]);
+      setSubtotal(0);
+    } catch (error) {
+      console.error('Error during checkout:', error);
+      // Handle checkout error
+    }
   };
 
   const closeCart = () => {
@@ -123,9 +134,12 @@ const Cart = ({ openCart, onCloseCart }) => {
                       </div>
                       <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
                       <div className="mt-6">
-                        <a href="#" className="flex items-center justify-center rounded-md border border-transparent bg-green-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700">
-                          Checkout
-                        </a>
+                      <button
+                        className="flex items-center justify-center rounded-md border border-transparent bg-green-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700"
+                        onClick={handleCheckout}
+                      >
+                        Checkout
+                      </button>
                       </div>
                     </div>
                   </div>

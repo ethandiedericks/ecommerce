@@ -75,21 +75,6 @@ export const fetchUserOrders = async () => {
   }
 };
 
-export const checkout = async () => {
-  try {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      throw new Error('User is not authenticated');
-    }
-
-    const response = await instance.post(`orders/checkout/`, {}, { headers: { Authorization: `Bearer ${token}` } });
-    console.log('Checkout successful:', response.data);
-    // Optionally, you can return response data or handle success differently.
-  } catch (error) {
-    console.error('Error during checkout:', error);
-    throw error;
-  }
-};
 
 export const fetchUserAddresses = async () => {
   try {
@@ -167,6 +152,29 @@ export const submitReview = async (productId, reviewData) => {
     // Optionally, you can return response data or handle success differently.
   } catch (error) {
     console.error('Error submitting review:', error);
+    throw error;
+  }
+};
+
+export const checkout = async () => {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    const response = await instance.post(
+      `orders/checkout/`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    const sessionId = response.data.session_id;
+
+    // Redirect the user to the Stripe checkout page
+    window.location.href = `https://checkout.stripe.com/pay/${sessionId}`;
+  } catch (error) {
+    console.error('Error during checkout:', error);
     throw error;
   }
 };
