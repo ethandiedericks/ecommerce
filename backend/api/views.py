@@ -7,6 +7,7 @@ from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from .models import (
     Category,
@@ -17,6 +18,7 @@ from .models import (
     Address,
     Refund,
     Checkout,
+    ProductImage
 )
 from .serializers import (
     ProductSerializer,
@@ -27,6 +29,7 @@ from .serializers import (
     AddressSerializer,
     RefundSerializer,
     CheckoutSerializer,
+    ProductImageSerializer
 )
 from .stripe_utils import create_checkout_session
 
@@ -57,7 +60,40 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    parser_classes = [MultiPartParser, FormParser]
 
+    def list(self, request, *args, **kwargs):
+        """
+        Lists all products with images.
+        """
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        # Include images for each product
+        data = serializer.data
+        for product_data in data:
+            product = Product.objects.get(pk=product_data['id'])
+            images = ProductImage.objects.filter(product=product)
+            product_data['images'] = ProductImageSerializer(images, many=True).data
+
+        return Response(data)
+    
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Retrieves a single product with images.
+        """
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+
+        # Include images for the product
+        images = ProductImage.objects.filter(product=instance)
+        images_serializer = ProductImageSerializer(images, many=True)
+
+        response_data = serializer.data
+        response_data['images'] = images_serializer.data
+
+        return Response(response_data)
+    
     @action(detail=True, methods=["get"])
     def reviews(self, request, pk=None):
         """
@@ -77,6 +113,20 @@ class ProductViewSet(viewsets.ModelViewSet):
         avg_rating = product.review_set.aggregate(Avg("rating"))["rating__avg"]
         return Response({"average_rating": avg_rating})
 
+    def create(self, request, *args, **kwargs):
+        images = request.FILES.getlist('images')
+        if len(images) > 5:
+            return Response({'error': 'You can upload a maximum of 5 images per product.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        product = serializer.save()
+
+        for image in images:
+            ProductImage.objects.create(product=product, image=image)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 class CreateRetrieveViewSet(
     mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet

@@ -8,6 +8,7 @@ from .models import (
     Address,
     Refund,
     Checkout,
+    ProductImage
 )
 from users.serializers import CustomUserSerializer
 
@@ -17,17 +18,26 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = "__all__"
 
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ['id', 'image']
 
 class ProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     average_rating = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = ["id", "name", "description", "price", "category", "stock_level", "images", "average_rating"]
 
     def get_average_rating(self, obj):
         return Review.get_average_rating(obj.id)
+
+    def get_images(self, obj):
+        images = ProductImage.objects.filter(product=obj)
+        return [image.image.url for image in images]
 
 
 class CartSerializer(serializers.ModelSerializer):
