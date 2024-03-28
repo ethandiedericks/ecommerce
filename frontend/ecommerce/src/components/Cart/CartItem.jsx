@@ -1,11 +1,12 @@
 import React from 'react';
+import axiosInstance from '../../axios';
 
 const CartItem = ({ item, handleRemoveItem }) => {
   return (
     <li className="flex py-6">
       <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
         <img
-          src={item.product.image.replace('/media/', '/api/media/')}
+          src={`${axiosInstance.defaults.baseURL.replace(/\/$/, '')}${item.product.images[0]}`}
           alt={item.product.name}
           className="h-full w-full object-cover object-center"
         />

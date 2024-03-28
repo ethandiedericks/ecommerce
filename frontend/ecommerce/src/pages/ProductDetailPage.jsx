@@ -15,7 +15,7 @@ const ProductDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(1);
   const { productId } = useParams();
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const ProductDetailPage = () => {
 
   const handleAddToCart = async () => {
     try {
-      await addToCart(productId);
+      await addToCart(productId, count);
       toast.success(`${product.name} added to cart!`, {
         position: "top-right",
         autoClose: 3000,
@@ -50,7 +50,6 @@ const ProductDetailPage = () => {
         draggable: true,
         progress: undefined,
       });
-      setCount(0);
     } catch (error) {
       console.error('Error adding product to cart:', error);
       toast.error('Error adding product to cart', {
@@ -74,7 +73,7 @@ const ProductDetailPage = () => {
   }
 
   const subtractOne = () => {
-    if (count > 0) {
+    if (count > 1) {
       setCount(count - 1);
     }
   };

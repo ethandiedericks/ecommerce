@@ -44,14 +44,14 @@ export const fetchReviewsByProduct = async (productId) => {
   }
 };
 
-export const addToCart = async (productId) => {
+export const addToCart = async (productId, quantity) => {
   try {
     const token = localStorage.getItem('access_token');
     if (!token) {
       throw new Error('User is not authenticated');
     }
 
-    await instance.post(`carts/`, { product_id: productId }, { headers: { Authorization: `Bearer ${token}` } });
+    await instance.post(`carts/`, { product_id: productId, quantity: quantity }, { headers: { Authorization: `Bearer ${token}` } });
     console.log('Product added to cart successfully');
     // Optionally, you can return response data or handle success differently.
   } catch (error) {
