@@ -7,7 +7,7 @@ const Reviews = ({ averageRating }) => {
       <div className="flex items-center space-x-1 rtl:space-x-reverse">
         {generateStars(averageRating)}
       </div>
-      <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ms-3">{averageRating === null ? 0 : averageRating}</span>
+      <span className="bg-orange-100 text-orange-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-orange-200 dark:text-orange-800 ms-3">{averageRating === null ? 0 : averageRating}</span>
     </div>
   );
 };

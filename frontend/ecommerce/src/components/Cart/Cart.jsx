@@ -135,7 +135,7 @@ const Cart = ({ openCart, onCloseCart }) => {
                       <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
                       <div className="mt-6">
                       <button
-                        className="flex items-center justify-center rounded-md border border-transparent bg-green-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700"
+                        className="flex items-center justify-center rounded-md border border-transparent bg-orange-500 px-10 py-3 text-base font-medium text-white shadow-sm hover:bg-orange-600"
                         onClick={handleCheckout}
                       >
                         Checkout

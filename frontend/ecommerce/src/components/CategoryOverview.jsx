@@ -41,7 +41,7 @@ const CategoryOverview = () => {
             </span>
             <Link
               to={`/categories/${category.id}/products/`}
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-3xl text-sm px-5 py-2.5 md:me-2 md:mb-2"
+              className="text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 font-medium rounded-3xl text-sm px-5 py-2.5 md:me-2 md:mb-2"
             >
               View more
             </Link>
