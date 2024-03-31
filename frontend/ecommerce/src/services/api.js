@@ -44,6 +44,17 @@ export const fetchReviewsByProduct = async (productId) => {
   }
 };
 
+export const saveCartDataToLocal = (cartData) => {
+  try {
+    localStorage.setItem('cart', JSON.stringify(cartData));
+    console.log('Cart data saved to local storage:', cartData);
+  } catch (error) {
+    console.error('Error saving cart data to local storage:', error);
+    throw error;
+  }
+};
+
+
 export const addToCart = async (productId, quantity) => {
   try {
     const token = localStorage.getItem('access_token');
@@ -53,7 +64,10 @@ export const addToCart = async (productId, quantity) => {
 
     await instance.post(`carts/`, { product_id: productId, quantity: quantity }, { headers: { Authorization: `Bearer ${token}` } });
     console.log('Product added to cart successfully');
-    // Optionally, you can return response data or handle success differently.
+    const updatedCartData = await fetchCartItems(); // Assuming you have a fetchCartItems function
+
+    // Save the updated cart data to local storage
+    saveCartDataToLocal(updatedCartData);
   } catch (error) {
     console.error('Error adding product to cart:', error);
     throw error;
@@ -163,18 +177,19 @@ export const checkout = async () => {
       throw new Error('User is not authenticated');
     }
 
-    const response = await instance.post(
-      `orders/checkout/`,
-      {},
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    // Retrieve cart data from localStorage or any other source
+    const cartData = JSON.parse(localStorage.getItem('cart'));
 
-    const sessionId = response.data.session_id;
+    const response = await instance.post(`orders/paypal_checkout/`, cartData, {
+      headers: { Authorization: `Bearer ${token}`} , 
+    });
+    const approvalUrl = response.data.approve_url;
 
-    // Redirect the user to the Stripe checkout page
-    window.location.href = `https://checkout.stripe.com/pay/${sessionId}`;
+    // Redirect the user to the PayPal approval URL
+    window.location.href = approvalUrl;
   } catch (error) {
     console.error('Error during checkout:', error);
     throw error;
   }
 };
+

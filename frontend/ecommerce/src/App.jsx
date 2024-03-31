@@ -19,8 +19,8 @@ function App() {
         <Route path="/" element={<LandingPage/>}/>
         <Route path="/products/:productId" element={<ProductDetailPage/>} />
         <Route path="/categories/:categoryId/products/" element={<ProductByCategoryPage/>}/>
-        <Route path="/success" component={SuccessPage} />
-        <Route path="/cancel" component={CancelPage} />
+        <Route path="checkout/success" element={<SuccessPage/>} />
+        <Route path="checkout/cancel" element={<CancelPage/>} />
       </Routes>
       <ToastContainer
         position="top-right"

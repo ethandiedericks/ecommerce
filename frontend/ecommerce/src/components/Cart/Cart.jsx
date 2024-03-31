@@ -64,6 +64,7 @@ const Cart = ({ openCart, onCloseCart }) => {
   const handleCheckout = async () => {
     try {
       await checkout();
+  
       // After successful checkout, you might want to clear the cart or perform other actions
       setCartItems([]);
       setSubtotal(0);
