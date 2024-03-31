@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import NavigationItem from './NavigationItem';
 import AuthButtons from './AuthButtons';
 import Cart from '../Cart/Cart';
+import Dropdown from './Dropdown';
 
 const DesktopNav = ({ isAuthenticated, toggleLoginModal, toggleRegisterModal, handleLogout }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  const toggleDropdown = () => {
+    setIsDropdownOpen((prevState) => !prevState);
+  };
   const toggleCart = () => {
     setIsCartOpen((prevState) => !prevState);
   };
@@ -23,6 +28,7 @@ const DesktopNav = ({ isAuthenticated, toggleLoginModal, toggleRegisterModal, ha
         handleLogout={handleLogout}
         className="md:space-x-4"
       />
+      <Dropdown isOpen={isDropdownOpen} toggleDropdown={toggleDropdown} />
       <CartWrapper toggleCart={toggleCart} isCartOpen={isCartOpen} onCloseCart={closeCart} />
     </div>
   );
