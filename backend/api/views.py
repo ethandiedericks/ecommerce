@@ -18,7 +18,7 @@ from .models import (
     Address,
     Refund,
     Checkout,
-    ProductImage
+    ProductImage,
 )
 from .serializers import (
     ProductSerializer,
@@ -29,9 +29,10 @@ from .serializers import (
     AddressSerializer,
     RefundSerializer,
     CheckoutSerializer,
-    ProductImageSerializer
+    ProductImageSerializer,
 )
-from .stripe_utils import create_checkout_session
+
+from .paypal_utils import paypalrestsdk, create_paypal_payment
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -72,12 +73,12 @@ class ProductViewSet(viewsets.ModelViewSet):
         # Include images for each product
         data = serializer.data
         for product_data in data:
-            product = Product.objects.get(pk=product_data['id'])
+            product = Product.objects.get(pk=product_data["id"])
             images = ProductImage.objects.filter(product=product)
-            product_data['images'] = ProductImageSerializer(images, many=True).data
+            product_data["images"] = ProductImageSerializer(images, many=True).data
 
         return Response(data)
-    
+
     def retrieve(self, request, *args, **kwargs):
         """
         Retrieves a single product with images.
@@ -90,10 +91,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         images_serializer = ProductImageSerializer(images, many=True)
 
         response_data = serializer.data
-        response_data['images'] = images_serializer.data
+        response_data["images"] = images_serializer.data
 
         return Response(response_data)
-    
+
     @action(detail=True, methods=["get"])
     def reviews(self, request, pk=None):
         """
@@ -114,9 +115,12 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Response({"average_rating": avg_rating})
 
     def create(self, request, *args, **kwargs):
-        images = request.FILES.getlist('images')
+        images = request.FILES.getlist("images")
         if len(images) > 5:
-            return Response({'error': 'You can upload a maximum of 5 images per product.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "You can upload a maximum of 5 images per product."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -126,7 +130,10 @@ class ProductViewSet(viewsets.ModelViewSet):
             ProductImage.objects.create(product=product, image=image)
 
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
+
 
 class CreateRetrieveViewSet(
     mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
@@ -215,6 +222,9 @@ class CartViewSet(CreateRetrieveViewSet):
         serializer.save()
 
 
+from django.http import QueryDict
+
+
 class OrderViewSet(CreateRetrieveViewSet):
     """
     A ViewSet for handling CRUD operations related to Order model.
@@ -246,9 +256,11 @@ class OrderViewSet(CreateRetrieveViewSet):
         return Response(serializer.data)
 
     @action(detail=False, methods=["post"])
-    def checkout(self, request):
+    def paypal_checkout(self, request):
         user = request.user
-
+        request_data = (
+            request.data.dict() if isinstance(request.data, QueryDict) else request.data
+        )
         # Check if the user has an address
         try:
             address = Address.objects.get(user=user)
@@ -257,7 +269,6 @@ class OrderViewSet(CreateRetrieveViewSet):
 
         # Get products from the user's cart
         cart_items = Cart.objects.filter(user=user)
-
         # Check if the cart is empty
         if not cart_items.exists():
             return Response(
@@ -265,7 +276,7 @@ class OrderViewSet(CreateRetrieveViewSet):
             )
 
         # Calculate total price based on items in the cart
-        total_price = self.calculate_total_price(cart_items)
+        total_price = sum(item.total_price for item in cart_items)
 
         # Create the order with calculated total price and products from the cart
         with transaction.atomic():
@@ -278,14 +289,20 @@ class OrderViewSet(CreateRetrieveViewSet):
             )
             order.products.set([item.product for item in cart_items])
 
-        # Create Stripe checkout session
-        session_id = create_checkout_session(order)
+        # Create PayPal payment
+        approve_url = create_paypal_payment(order)
+        
+        if approve_url:
+            # Clear the user's cart after successful payment creation
+            cart_items.delete()
 
-        # Clear the user's cart after checkout
-        cart_items.delete()
-
-        # Return the Stripe checkout session ID
-        return Response({"session_id": session_id}, status=status.HTTP_200_OK)
+            # Return the PayPal approval URL
+            return Response({"approve_url": approve_url}, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"error": "Failed to create PayPal payment"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
     def calculate_total_price(self, cart_items):
         """
