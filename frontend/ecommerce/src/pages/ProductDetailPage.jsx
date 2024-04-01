@@ -17,6 +17,7 @@ const ProductDetailPage = () => {
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [count, setCount] = useState(1);
   const { productId } = useParams();
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -82,9 +83,25 @@ const ProductDetailPage = () => {
     <section className="w-full p-4 bg-white">
       <div className="max-w-5xl mx-auto grid grid-cols-1 gap-y-8 p-8 mt-5">
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-32 gap-y-10">
-          <div className="flex justify-center">
+        <div className="flex flex-col items-center">
             {/* Main image */}
-            <img src={`${axiosInstance.defaults.baseURL.replace(/\/$/, '')}${product.images[0].image}`} className="max-h-[400px] rounded-lg" alt={product.name} />
+            <img
+              src={selectedImage || `${axiosInstance.defaults.baseURL.replace(/\/$/, '')}${product.images[0].image}`}
+              className="max-h-[400px] rounded-lg"
+              alt={product.name}
+            />
+            <div className="mt-4 flex space-x-4">
+              {/* Thumbnail images */}
+              {product.images.map((image, index) => (
+                <img
+                  key={index}
+                  src={`${axiosInstance.defaults.baseURL.replace(/\/$/, '')}${image.image}`}
+                  className="h-20 w-20 rounded-lg cursor-pointer border border-gray-300"
+                  alt={`Thumbnail ${index}`}
+                  onClick={() => setSelectedImage(`${axiosInstance.defaults.baseURL.replace(/\/$/, '')}${image.image}`)}
+                />
+              ))}
+            </div>
           </div>
           
           <div className="flex flex-col justify-center">
