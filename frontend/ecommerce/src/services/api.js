@@ -64,9 +64,8 @@ export const addToCart = async (productId, quantity) => {
 
     await instance.post(`carts/`, { product_id: productId, quantity: quantity }, { headers: { Authorization: `Bearer ${token}` } });
     console.log('Product added to cart successfully');
-    const updatedCartData = await fetchCartItems(); // Assuming you have a fetchCartItems function
+    const updatedCartData = await fetchCartItems();
 
-    // Save the updated cart data to local storage
     saveCartDataToLocal(updatedCartData);
   } catch (error) {
     console.error('Error adding product to cart:', error);
@@ -114,7 +113,6 @@ export const requestRefund = async (orderId) => {
 
     const response = await instance.post(`refunds/`, { order: orderId }, { headers: { Authorization: `Bearer ${token}` } });
     console.log('Refund requested successfully:', response.data);
-    // Optionally, you can return response data or handle success differently.
   } catch (error) {
     console.error('Error requesting refund:', error);
     throw error;
@@ -145,7 +143,6 @@ export const removeCartItem = async (itemId) => {
 
     await instance.delete(`carts/${itemId}/remove_item/`, { headers: { Authorization: `Bearer ${token}` } });
 
-    // If successful, fetch the updated cart items
     const updatedCartItems = await fetchCartItems();
     return updatedCartItems;
   } catch (error) {
@@ -163,7 +160,6 @@ export const submitReview = async (productId, reviewData) => {
     console.log({ product_id: productId, ...reviewData })
     const response = await instance.post(`reviews/`, { product_id: productId, ...reviewData }, { headers: { Authorization: `Bearer ${token}` } });
     console.log('Review submitted successfully:', response.data);
-    // Optionally, you can return response data or handle success differently.
   } catch (error) {
     console.error('Error submitting review:', error);
     throw error;
@@ -177,7 +173,6 @@ export const checkout = async () => {
       throw new Error('User is not authenticated');
     }
 
-    // Retrieve cart data from localStorage or any other source
     const cartData = JSON.parse(localStorage.getItem('cart'));
 
     const response = await instance.post(`orders/paypal_checkout/`, cartData, {
@@ -185,7 +180,6 @@ export const checkout = async () => {
     });
     const approvalUrl = response.data.approve_url;
 
-    // Redirect the user to the PayPal approval URL
     window.location.href = approvalUrl;
   } catch (error) {
     console.error('Error during checkout:', error);
