@@ -1,6 +1,6 @@
-import React from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { IoIosArrowDown } from "react-icons/io";
+import { Link } from 'react-router-dom';
 
 const Dropdown = ({ isOpen, toggleDropdown }) => {
   return (
@@ -17,12 +17,25 @@ const Dropdown = ({ isOpen, toggleDropdown }) => {
         <DropdownMenu.Item
           className="text-gray-900 flex w-full items-center rounded-md px-2 py-2 text-sm hover:bg-orange-500 hover:text-white outline-none cursor-pointer "
         >
-          Account Details
+          <Link
+          to="/account-details"
+    
+          role="menuitem"
+          >
+            Account Details
+          </Link>
+          
         </DropdownMenu.Item>
         <DropdownMenu.Item
           className="text-gray-900 flex w-full items-center rounded-md px-2 py-2 text-sm hover:bg-orange-500 hover:text-white outline-none cursor-pointer"
         >
+          <Link
+          to="/orders"
+          
+          role="menuitem"
+          >
           Orders
+        </Link>
         </DropdownMenu.Item>
       </DropdownMenu.Content>
     </DropdownMenu.Root>

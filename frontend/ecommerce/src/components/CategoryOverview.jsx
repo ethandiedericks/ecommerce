@@ -1,31 +1,11 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchCategories, fetchProductsByCategory } from '../services/api';
 import Cards from './Cards';
+import useCategories from '../hooks/useCategories';
+import useWindowSize from '../hooks/useWindowSize';
 
 const CategoryOverview = () => {
-  const [categories, setCategories] = useState([]);
-  const [productsByCategory, setProductsByCategory] = useState({});
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const categoriesData = await fetchCategories();
-        setCategories(categoriesData);
-
-        const productsByCategoryMap = {};
-        for (const category of categoriesData) {
-          const products = await fetchProductsByCategory(category.id);
-          productsByCategoryMap[category.id] = products;
-        }
-        setProductsByCategory(productsByCategoryMap);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const { categories, productsByCategory } = useCategories();
+  const { width } = useWindowSize();
 
   const categoriesWithProducts = categories.filter(
     category => productsByCategory[category.id]?.length > 0
@@ -48,7 +28,7 @@ const CategoryOverview = () => {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
             {productsByCategory[category.id]
-              ?.slice(0, window.innerWidth >= 768 ? 5 : 4)
+              ?.slice(0, width >= 768 ? 5 : 4)
               .map((product, index) => (
                 <Link key={index} to={`/products/${product.id}`}>
                   <Cards key={index} product={product} />
